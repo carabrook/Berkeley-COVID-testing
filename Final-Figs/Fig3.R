@@ -7,7 +7,7 @@ library(dplyr)
 
 
 make_Fig_3 <- function(filename){
-load("dat.all.int.10.21.Rdata")
+load("Final-Figs/dat.all.int.10.21.Rdata")
 head(dat)
 
 
@@ -83,7 +83,7 @@ print(pFig3cases)
 
 #next plot R-effective across each intervention and compare
 
-load("R0.all.int.10.21.Rdata")
+load("Final-Figs/R0.all.int.10.21.Rdata")
 
 dat.test.R0$TAT = factor(dat.test.R0$TAT, levels = c(1,2,3,4,5,10, Inf))
 dat.test.R0$LOD = as.character(dat.test.R0$LOD)
@@ -150,14 +150,14 @@ ggsave(file =filename,
        dpi=300)
 }
 
-make_Fig_3("Fig3.png")
+make_Fig_3("Final-Figs/Fig3.png")
 
 
 #and save the raw data
 
 make.Table.S1 <- function(filename){
   
-load("dat.all.int.10.21.Rdata")
+load("Final-Figs/dat.all.int.10.21.Rdata")
 head(dat)
   
   
@@ -183,7 +183,7 @@ dat.sum$iso_lag = factor(dat.sum$iso_lag, levels=c(1,2,3,4,5, Inf))
 dat.sum$distance_limit = factor(dat.sum$distance_limit, levels=c(6,12,16, 20,50,Inf))
 
 
-load("R0.all.int.10.21.Rdata")
+load("Final-Figs/R0.all.int.10.21.Rdata")
 
 dat.test.R0$TAT = factor(dat.test.R0$TAT, levels = c(1,2,3,4,5,10, Inf))
 dat.test.R0$LOD = as.character(dat.test.R0$LOD)
@@ -235,4 +235,4 @@ dat.sum <- arrange(dat.sum, intervention_class, test_rotation, LOD, TAT, distanc
 write.csv(dat.sum, file = filename)
 
 }
-make.Table.S1(filename = "SI-Appendix-Table-S1.csv")
+make.Table.S1(filename = "Final-Figs/SI-Appendix-Table-S1.csv")

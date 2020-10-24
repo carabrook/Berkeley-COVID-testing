@@ -6,9 +6,9 @@ library(dplyr)
 
 rm(list=ls())
 
-load("titer.dat.20K.Rdata")
+load("Final-Figs/titer.dat.20K.Rdata")
 #load("titer.dat.20K.Rdata")
-load("single.pop.par.Rdata")
+load("Final-Figs/single.pop.par.Rdata")
 
 
 #Figure 1 within-host trajectories
@@ -84,5 +84,5 @@ ggsave(file = filename,
 }
 
 
-make_Figure_1("Fig1-inset.png") 
+make_Figure_1("Final-Figs/Fig1-inset.png") 
 

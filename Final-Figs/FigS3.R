@@ -8,7 +8,7 @@ library(dplyr)
 
 make_Fig_3_S2 <- function(filename){
   
-load("dat.trace.10.21.Rdata")
+load("Final-Figs/dat.trace.10.21.Rdata")
 
 head(dat.trace)
 dat.trace$test_rotation <- sapply(strsplit(dat.trace$test_rotation, "-"), '[', 1)
@@ -87,7 +87,7 @@ print(FigS1top)
 
 #next plot R-effective across each intervention and compare
 
-load("R0.trace.10.21.Rdata")
+load("Final-Figs/R0.trace.10.21.Rdata")
 
 dat.trace.R0$test_rotation <- sapply(strsplit(dat.trace.R0$test_rotation, "-"), '[', 1)
 dat.trace.R0$test_rotation[dat.trace.R0$test_rotation=="biweekly"] <- "biweekly-testing"
@@ -152,13 +152,13 @@ ggsave(file = filename,
        dpi=300)
 }
 
-make_Fig_3_S2("FigS3.png")
+make_Fig_3_S2("Final-Figs/FigS3.png")
 
 
 #and the second data set
 make.Table.S2 <- function(filename){
   
-  load("dat.trace.10.21.Rdata")
+  load("Final-Figs/dat.trace.10.21.Rdata")
   head(dat.trace)
   
   
@@ -187,7 +187,7 @@ make.Table.S2 <- function(filename){
   
   dat.sum$contact_tracing <- factor(dat.sum$contact_tracing, levels = c( "no contact tracing", "with contact tracing"))
   
-  load("R0.trace.10.21.Rdata")
+  load("Final-Figs/R0.trace.10.21.Rdata")
   
   dat.trace.R0$TAT = factor(dat.trace.R0$TAT, levels = c(1,2,3,4,5,10, Inf))
   dat.trace.R0$LOD = as.character(dat.trace.R0$LOD)
@@ -239,4 +239,4 @@ make.Table.S2 <- function(filename){
   write.csv(dat.sum, file = filename)
   
 }
-make.Table.S2(filename = "SI-Appendix-Table-S2.csv")
+make.Table.S2(filename = "Final-Figs/SI-Appendix-Table-S2.csv")

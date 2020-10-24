@@ -24,7 +24,7 @@ label.dat$x = as.numeric(label.dat$x)
 label.dat$y = as.numeric(label.dat$y)
 
 #setwd("/Users/caraebrook/Documents/R/R_repositories/Berkeley-Reopening/test-sensitivity/")
-load("dat.test.group.lognormR0.10.19.Rdata")
+load("Final-Figs/dat.test.group.lognormR0.10.19.Rdata")
 #Fig 1 is just gains by distance limit
 
 head(dat)
@@ -124,6 +124,6 @@ ggsave(file = filename,
        dpi=200)
 }
 
-make_Figure_2_S1("FigS1.png")
+make_Figure_2_S1("Final-Figs/FigS1.png")
 
 

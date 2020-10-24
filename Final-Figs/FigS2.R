@@ -9,7 +9,7 @@ library(dplyr)
 
 make_Fig_3_S1 <- function(filename){
   
-load("dat.all.high.asym.10.21.Rdata")
+load("Final-Figs/dat.all.high.asym.10.21.Rdata")
 head(dat)
 
 
@@ -40,15 +40,15 @@ dat.sum$label[dat.sum$prop_asym==.49] <- "50% asymptomatic"
 
 dat.sum$label <- factor(dat.sum$label, levels =c("30% asymptomatic", "50% asymptomatic"))
 
-dat.sum.testing = subset(dat.sum, intervention_class=="testing")
+#dat.sum.testing = subset(dat.sum, intervention_class=="testing")
 dat.sum.symptom = subset(dat.sum, intervention_class=="symptom-isolation")
 
 
-dat.sum.testing$test_rotation <- sapply(strsplit(dat.sum.testing$test_rotation, "-"), '[', 1)
-dat.sum.testing$test_rotation[dat.sum.testing$test_rotation=="biweekly"] <- "biweekly-testing"
-dat.sum.testing$test_rotation[dat.sum.testing$test_rotation=="weekly"] <- "weekly-testing"
-dat.sum.testing$test_rotation[dat.sum.testing$test_rotation=="two"] <- "every-two-weeks-testing"
-dat.sum.testing$test_rotation <- factor(dat.sum.testing$test_rotation, levels = c("biweekly-testing", "weekly-testing", "every-two-weeks-testing"))
+#dat.sum.testing$test_rotation <- sapply(strsplit(dat.sum.testing$test_rotation, "-"), '[', 1)
+#dat.sum.testing$test_rotation[dat.sum.testing$test_rotation=="biweekly"] <- "biweekly-testing"
+#dat.sum.testing$test_rotation[dat.sum.testing$test_rotation=="weekly"] <- "weekly-testing"
+#dat.sum.testing$test_rotation[dat.sum.testing$test_rotation=="two"] <- "every-two-weeks-testing"
+#dat.sum.testing$test_rotation <- factor(dat.sum.testing$test_rotation, levels = c("biweekly-testing", "weekly-testing", "every-two-weeks-testing"))
 
 
 #plus cases saved:
@@ -68,7 +68,7 @@ print(pB)
 
 #next plot R-effective across each intervention and compare
 
-load("R0.all.high.asym.10.21.Rdata")
+load("Final-Figs/R0.all.high.asym.10.21.Rdata")
 
 dat.test.R0$TAT = factor(dat.test.R0$TAT, levels = c(1,2,3,4,5,10, Inf))
 dat.test.R0$LOD = as.character(dat.test.R0$LOD)
@@ -82,15 +82,15 @@ dat.test.R0$label[dat.test.R0$prop_asym==.49] <- "50% asymptomatic"
 dat.test.R0$label <- factor(dat.test.R0$label, levels =c("30% asymptomatic", "50% asymptomatic"))
 
 
-dat.test.R0.testing = subset(dat.test.R0, intervention_class=="testing")
+#dat.test.R0.testing = subset(dat.test.R0, intervention_class=="testing")
 dat.test.R0.symptom = subset(dat.test.R0, intervention_class=="symptom-isolation")
 
 
-dat.test.R0.testing$test_rotation <- sapply(strsplit(dat.test.R0.testing$test_rotation, "-"), '[', 1)
-dat.test.R0.testing$test_rotation[dat.test.R0.testing$test_rotation=="biweekly"] <- "biweekly-testing"
-dat.test.R0.testing$test_rotation[dat.test.R0.testing$test_rotation=="weekly"] <- "weekly-testing"
-dat.test.R0.testing$test_rotation[dat.test.R0.testing$test_rotation=="two"] <- "every-two-weeks-testing"
-dat.test.R0.testing$test_rotation <- factor(dat.test.R0.testing$test_rotation, levels = c("biweekly-testing", "weekly-testing", "every-two-weeks-testing"))
+#dat.test.R0.testing$test_rotation <- sapply(strsplit(dat.test.R0.testing$test_rotation, "-"), '[', 1)
+#dat.test.R0.testing$test_rotation[dat.test.R0.testing$test_rotation=="biweekly"] <- "biweekly-testing"
+#dat.test.R0.testing$test_rotation[dat.test.R0.testing$test_rotation=="weekly"] <- "weekly-testing"
+#dat.test.R0.testing$test_rotation[dat.test.R0.testing$test_rotation=="two"] <- "every-two-weeks-testing"
+#dat.test.R0.testing$test_rotation <- factor(dat.test.R0.testing$test_rotation, levels = c("biweekly-testing", "weekly-testing", "every-two-weeks-testing"))
 
 
 #now plot testing side-by-side with behavior
@@ -118,4 +118,4 @@ ggsave(file =filename,
        dpi=300)
 }
 
-make_Fig_3_S1("FigS2.png")
+make_Fig_3_S1("Final-Figs/FigS2.png")

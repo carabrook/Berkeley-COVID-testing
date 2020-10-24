@@ -7,7 +7,7 @@ library(grid)
 
 
 make_Figure_5<- function(filename){
-img <- readPNG(source = "Figure5A.png")
+img <- readPNG(source = "Final-Figs/Figure5A.png")
 
 p5A <- ggplot() +annotation_custom(rasterGrob(img, 
                                        width = unit(1,"npc"),
@@ -17,7 +17,7 @@ p5A <- ggplot() +annotation_custom(rasterGrob(img,
 print(p5A)
 
 #Fig 2 is gains by testing at a set distance limit. Supplemental is distance limit by all types of testing
-load("dat_multi_10_12.Rdata")
+load("Final-Figs/dat_multi_10_12.Rdata")
 head(dat.multi)
 
 
@@ -79,7 +79,7 @@ print(p5c)
 # and plot R0
 
 
-load("R0_multi_group_10_12.Rdata")
+load("Final-Figs/R0_multi_group_10_12.Rdata")
 head(dat.multi.R0)
 
 dat.multi.R0 <- arrange(dat.multi.R0, desc(mean))
@@ -113,4 +113,4 @@ ggsave(file = filename,
        scale=3, 
        dpi=200)
 }
-make_Figure_5("Fig5.png")
+make_Figure_5("Final-Figs/Fig5.png")

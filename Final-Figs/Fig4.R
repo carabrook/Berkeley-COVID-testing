@@ -5,7 +5,7 @@ library(dplyr)
 
 #Figure 4 shows gains in testing across the number of test days per week -- under binom R0
 make_Fig4_Fig4_S1 <- function(filename_Fig4, filename_Fig4_S1){
-load("dat.test.all.10.12.Rdata")
+load("Final-Figs/dat.test.all.10.12.Rdata")
 head(dat.test.all)
 
 unique(dat.test.all$TAT)
@@ -78,7 +78,7 @@ dat.sum$variance = (dat.sum$sd)^2
 
 
 #and add in no test at all
-load("dat.all.int.10.21.Rdata")
+load("Final-Figs/dat.all.int.10.21.Rdata")
 head(dat)
 dat.none = subset(dat, intervention_class=="none" & day<=50)
 dat.none.sum <-ddply(dat.none, .(intervention_class), summarise, total_cases=max(mean_cumulative), lci_cases = max(lci_cumulative), uci_cases=max(uci_cumulative))
@@ -105,7 +105,7 @@ print(p4b)
 
 # and plot R0
 
-load("R0_test_all_group_10_12.Rdata")
+load("Final-Figs/R0_test_all_group_10_12.Rdata")
 
 
 dat.test.R0$intervention_class <- NA
@@ -174,13 +174,13 @@ ggsave(file = filename_Fig4_S1,
        dpi=300)
 }
 
-make_Fig4_Fig4_S1(filename_Fig4="Fig4Final.png",
-                  filename_Fig4_S1="FigS4.png")
+make_Fig4_Fig4_S1(filename_Fig4="Final-Figs/Fig4Final.png",
+                  filename_Fig4_S1="Final-Figs/FigS4.png")
 
 make.Table.S3 <- function(filename){
   
   
-  load("dat.test.all.10.12.Rdata")
+  load("Final-Figs/dat.test.all.10.12.Rdata")
   head(dat.test.all)
   
   dat.test.all = subset(dat.test.all, day<=50)
@@ -214,7 +214,7 @@ make.Table.S3 <- function(filename){
   dat.sum$sd = (dat.sum$uci_cases - dat.sum$total_cases)/1.96
   
   #and add in no test at all
-  load("dat.all.int.10.21.Rdata")
+  load("Final-Figs/dat.all.int.10.21.Rdata")
   head(dat)
   dat.none = subset(dat, intervention_class=="none" & day<=50)
   dat.none.sum <-ddply(dat.none, .(intervention_class), summarise, total_cases=max(mean_cumulative), lci_cases = max(lci_cumulative), uci_cases=max(uci_cumulative))
@@ -224,7 +224,7 @@ make.Table.S3 <- function(filename){
   dat.sum$cases_saved_uci <- dat.none.sum$uci_cases - dat.sum$uci_cases
   
   
-  load("R0_test_all_group_10_12.Rdata")
+  load("Final-Figs/R0_test_all_group_10_12.Rdata")
   #and save the raw data:
   head(dat.sum)
   head(dat.test.R0)
@@ -280,4 +280,4 @@ make.Table.S3 <- function(filename){
   
 }
 
-make.Table.S3("SI-Appendix-Table-S3.csv")
+make.Table.S3("Final-Figs/SI-Appendix-Table-S3.csv")

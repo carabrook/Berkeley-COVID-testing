@@ -22,7 +22,7 @@ label.dat$x = as.numeric(label.dat$x)
 label.dat$y = as.numeric(label.dat$y)
 
 
-load("dat.group.lim.10.21.Rdata")
+load("Final-Figs/dat.group.lim.10.21.Rdata")
 #Fig 1 is just gains by distance limit
 
 head(dat)
@@ -124,4 +124,4 @@ ggsave(file = filename,
        dpi=200)
 }
 
-make_Figure_2("Fig2.png")
+make_Figure_2("Final-Figs/Fig2.png")
