@@ -46,3 +46,5 @@ This directory also contains the file `viral-load.R`, which can be used to gener
 For the parameterization given, `model-sanbox.R` can run locally in modest time. However do note that for larger populations or higher numbers of realizations it will obviously take longer, benchmarking a run with a single iteration will allow you to roughly approximate how much longer run 10x,50x,100x, etc. epidemics may take.
 
 `model-sandbox.R` also contains some rudimentary plotting functions as an example of how to work with the `replicate.epidemic()` output, creating and saving a 4 panel plot with the name given to `OUTPUT_PLOT_NAME` alongside the `.Rdata` file containing the output structure. This plot shows mean daily and cumulative incidence and isolations for the epidemic. ![Example Plot](/model-sandbox/example.png)
+
+
