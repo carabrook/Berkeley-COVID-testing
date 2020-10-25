@@ -1,6 +1,6 @@
 # Berkeley-COVID-testing
 
-This repository is the companion to "Optimizing COVID-19 control with asymptomatic testing in a university environment", for both reproduction of simulations and figures shown in the manuscript and a brief guide for using the model with a custom parameterization.
+This repository is the companion to "Optimizing COVID-19 control with asymptomatic surveillance testing in a university environment", for both reproduction of simulations and figures shown in the manuscript and a brief guide for using the model with a custom parameterization.
 
 ## Contents
 The repository is split into three main directories
