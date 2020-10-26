@@ -239,4 +239,4 @@ make.Table.S2 <- function(filename){
   write.csv(dat.sum, file = filename)
   
 }
-make.Table.S2(filename = "Final-Figs/SI-Appendix-Table-S2.csv")
+make.Table.S2(filename = "Final-Figs/SI-Appendix-Dataset-S2.csv")
