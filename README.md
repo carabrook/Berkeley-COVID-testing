@@ -37,6 +37,7 @@ Parameter Name | Description
 `input.pop` | List of sizes of each subpopulation
 `n.init.exposed.vector` | List of number of individuals initially exposed in each subpopulation
 `employ.id.vector` | List of employee ids marking the start of a new subpopulation (i.e. if the population is a single group this is simply `c(1)`. If the subpopulations are 5000 apiece this is `c(1,5001)`)
+`within.host.theta` | Parameter to control infectiousness at maximum viral load, set to 0.72. See [Ke et al.](https://www.medrxiv.org/content/10.1101/2020.09.25.20201772v1) for details 
 
 ## model-sandbox basics
 As stated above this is a basic directory containing the key pieces to set up customized model runs, including examples of how to change NPI intervention parameters (e.g. the parameters stored in `"pop.par.base.Rdata"`). The current script `model-sandbox.R` is parameterized to run for a single population of size 650, with group size limits of 15 under 90% compliance, one day lags for testing turnaround, contact tracing, and symptomatic isolation, with biweekly testing. These are declared in the head of the script, as global variables along with several other useful parameters, which are then loaded into the parameter data frame if required before calling `replicate.epidemic()`. We do not set up every parameter sent to `replicate.epidemic()` in this way for brevity, but other parameters could be changed in the same manner if they are of interest.
@@ -46,5 +47,3 @@ This directory also contains the file `viral-load.R`, which can be used to gener
 For the parameterization given, `model-sanbox.R` can run locally in modest time. However do note that for larger populations or higher numbers of realizations it will obviously take longer, benchmarking a run with a single iteration will allow you to roughly approximate how much longer run 10x,50x,100x, etc. epidemics may take.
 
 `model-sandbox.R` also contains some rudimentary plotting functions as an example of how to work with the `replicate.epidemic()` output, creating and saving a 4 panel plot with the name given to `OUTPUT_PLOT_NAME` alongside the `.Rdata` file containing the output structure. This plot shows mean daily and cumulative incidence and isolations for the epidemic. ![Example Plot](/model-sandbox/example.png)
-
-
