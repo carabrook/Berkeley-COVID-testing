@@ -157,7 +157,7 @@ p1 <- ggplot(out) + geom_line(aes(x=time, y=log10(V), color=piT, group=employIDs
       
 print(p1)
 
-ggsave(file = "Individual_Titers_Dec2020.png",
+ggsave(file = "model-sandbox/within-host-model/Individual_Titers_Dec2020.png",
        units="mm",  
        width=60, 
        height=40, 
@@ -165,11 +165,11 @@ ggsave(file = "Individual_Titers_Dec2020.png",
        dpi=300)
 
 #and load and plot from 20000 runs:
-load("viral-load-Dec-2020/up-savio/titer.dat.20K.Rdata")
+load("model-sandbox/within-host-model/titer.dat.20K.Rdata")
 head(titer.dat)
 
 
-p2 <- ggplot(titer.dat) + geom_line(aes(x=time, y=log10(V), color=piT, group=employIDs)) + coord_cartesian(xlim=c(0,20), ylim =c(0,12)) +
+p2 <- ggplot(titer.dat) + geom_line(aes(x=time, y=log10(V), color=piT, group=employ_ids)) + coord_cartesian(xlim=c(0,20), ylim =c(0,8)) +
   theme_bw() + geom_hline(yintercept = 3, color="red", linetype=2) + annotate("text", label="LOD=10^3", y = 3.2, x=25) + 
   ylab("log10(viral load)") + xlab("days since exposure") + scale_color_gradient(low="gray87", high="gray48") +
   geom_hline(yintercept = 5, color="red", linetype=2) + annotate("text", label="LOD=10^5", y = 5.2, x=25) +
@@ -180,7 +180,7 @@ p2 <- ggplot(titer.dat) + geom_line(aes(x=time, y=log10(V), color=piT, group=emp
 
 print(p2)
 
-ggsave(file = "viral-load-Dec-2020/all_titers_20K_Dec2020.png",
+ggsave(file = "model-sandbox/within-host-model/all_titers_20K_Dec2020.png",
        units="mm",  
        width=60, 
        height=40, 
