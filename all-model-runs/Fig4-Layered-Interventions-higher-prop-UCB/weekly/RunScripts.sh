@@ -1,0 +1,12 @@
+R CMD BATCH --no-save weekly-2-test-days-trace-1-symp-group.R
+R CMD BATCH --no-save weekly-2-test-days-trace-1-symp.R
+R CMD BATCH --no-save weekly-2-test-days-trace-1.R
+R CMD BATCH --no-save weekly-2-test-days.R
+R CMD BATCH --no-save weekly-5-test-days-trace-1-symp-group.R
+R CMD BATCH --no-save weekly-5-test-days-trace-1-symp.R
+R CMD BATCH --no-save weekly-5-test-days-trace-1.R
+R CMD BATCH --no-save weekly-5-test-days.R
+R CMD BATCH --no-save weekly-7-test-days-trace-1-symp-group.R
+R CMD BATCH --no-save weekly-7-test-days-trace-1-symp.R
+R CMD BATCH --no-save weekly-7-test-days-trace-1.R
+R CMD BATCH --no-save weekly-7-test-days.R
