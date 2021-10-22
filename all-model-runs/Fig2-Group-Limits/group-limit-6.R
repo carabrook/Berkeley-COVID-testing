@@ -1,14 +1,13 @@
 rm(list=ls())
 
 .libPaths("/global/home/users/cbrook/R/x86_64-pc-linux-gnu-library/3.6")
-#setwd("/Users/caraebrook/Documents/R/R_repositories/Berkeley-Reopening/Dec-2020/all-runs/Re-Run-12-24/FigS1/")
+#setwd("/Users/caraebrook/Documents/R/R_repositories/Berkeley-Reopening/Berkeley-COVID-testing/all-model-runs/Fig2-Group-Limits/")
 
 #no group, no test, no trace
 
 library(data.table)
 library(plyr)
 library(dplyr)
-library(EpiEstim)
 library(deSolve)
 library(matrixStats)
 library(fitdistrplus)

@@ -164,8 +164,8 @@ add.risk.cat <- function(dat, pop_dat){
   dat = data.table(dat)
   
   daily_new <- dat[, day := ceiling(time_isolation) #time_isolated
-                   ][, .(daily_isolations = .N), by = day
-                     ]
+  ][, .(daily_isolations = .N), by = day
+  ]
   
   pop_dat$add <- 0
   for (i in 1:length(daily_new$day)){
@@ -181,8 +181,8 @@ add.risk.cat.exp <- function(dat, pop_dat, input_par){
   dat = data.table(dat)
   
   daily_new <- dat[, day := ceiling(exposure_time) 
-                   ][, .(daily_exposures = .N), by = day
-                     ]
+  ][, .(daily_exposures = .N), by = day
+  ]
   
   pop_dat$add <- 0
   for (i in 1:length(daily_new$day)){
@@ -250,9 +250,21 @@ cross.infect <- function(dat, all.sus, input.par){
   
 }
 assign.ID = function(sus.dat.sub, dat.new.sub){
+  
   #at the very end of the time series, you may run out of susceptibles in the right category, in which case, these just become lost infections
   if(nrow(dat.new.sub)<=length(sus.dat.sub$employ_ids)){
     dat.new.sub$new_infected =    sample(sus.dat.sub$employ_ids, size=nrow(dat.new.sub), replace=FALSE)  
+    
+    #now edit this based on the fact that some might be vaccinated
+    names(sus.dat.sub)[names(sus.dat.sub)=="employ_ids"] <- "new_infected"
+    
+    dat.new.sub <- merge(dat.new.sub, sus.dat.sub, by = "new_infected", all.x = T, sort=F)
+    
+    dat.new.sub$keep <- 1 
+    
+    #get rid of 95% of vaccinated cases (should probably be higher)
+    dat.new.sub$keep[dat.new.sub$orig_state==6] <- sample(c(0,1), size=length(dat.new.sub$employ_ids[dat.new.sub$orig_state==6]), replace=T, prob = c(.95,.05))  
+    
   }else{
     new.count = length(sus.dat.sub$employ_ids)
     new.missed = nrow(dat.new.sub) - new.count
@@ -260,9 +272,30 @@ assign.ID = function(sus.dat.sub, dat.new.sub){
     row.take = sample(row.tmp, size = new.count, replace = FALSE)
     dat.new.sub <- dat.new.sub[row.take,] 
     dat.new.sub$new_infected =    sample(sus.dat.sub$employ_ids, size=nrow(dat.new.sub), replace=FALSE)  
+    
+    #now edit this based on the fact that some might be vaccinated
+    names(sus.dat.sub)[names(sus.dat.sub)=="employ_ids"] <- "new_infected"
+    dat.new.sub <- merge(dat.new.sub, sus.dat.sub, by = "new_infected", all.x = T, sort=F)
+    dat.new.sub$keep <- 1 
+    #get rid of 95% of vaccinated cases (should probably be higher)
+    dat.new.sub$keep[dat.new.sub$orig_state==6] <- sample(c(0,1), size=length(dat.new.sub$employ_ids[dat.new.sub$orig_state==6]), replace=T, prob = c(.95,.05))  
+  }
+  #now only keep the keepers
+  dat.new.sub = subset(dat.new.sub, keep==1)
+  
+  
+  
+  if(nrow(dat.new.sub)>0){
+    #remove those excess columns and return
+    dat.new.sub <- dplyr::select(dat.new.sub, -(orig_state), -(keep))
+    return(dat.new.sub)
+  }else{
+    
+    dat.new.sub <- rbind.data.frame(rep(NA,7))
+    names(dat.new.sub) <- c("employ_ids", "exposure_time", "actual_cases_caused", "infector_iso_time", "infector_cat", "generation_time", "new_cat")
+    return( dat.new.sub )
   }
   
-  return(dat.new.sub)
 }
 assign.infections <- function(pop.mat, gen_list, timestep, input.par){
   # assign new exposures (and times) based on 'actual cases caused' above
@@ -307,10 +340,11 @@ assign.infections <- function(pop.mat, gen_list, timestep, input.par){
     #bias the sampling based on the proportion of infections within and without of your direct cohort 
     
     #first, pair the remaining susceptibles with their category
+    #also include the vaccinated, but note that most of those infections will not actually occur - can think of these like "lost" infectipns
     
     
-    all.sus <- cbind.data.frame(pop.mat$employ_ids[pop.mat$state==0],pop.mat$employ_cat[pop.mat$state==0])
-    names(all.sus) = c("employ_ids", "employ_cat")
+    all.sus <- cbind.data.frame(pop.mat$employ_ids[pop.mat$state==0 |pop.mat$state==6],pop.mat$employ_cat[pop.mat$state==0|pop.mat$state==6], pop.mat$state[pop.mat$state==0|pop.mat$state==6])
+    names(all.sus) = c("employ_ids", "employ_cat", "orig_state")
     new.list = dlply(new.mat, .(employ_ids))
     
     #cross infect by cat
@@ -333,8 +367,12 @@ assign.infections <- function(pop.mat, gen_list, timestep, input.par){
     dat.new.split.out = mapply(FUN=assign.ID, sus.dat.sub= tmp.sus.split, dat.new.sub= new.mat.split, SIMPLIFY = FALSE)
     new.mat = data.table::rbindlist(dat.new.split.out)
     #new.mat = do.call("rbind", dat.new.split.out)
+    new.mat <- new.mat[complete.cases(new.mat),]
     
-    new.mat$new_exposure_time = new.mat$exposure_time + new.mat$generation_time
+    if(nrow(new.mat)>0){
+      new.mat$new_exposure_time = new.mat$exposure_time + new.mat$generation_time  
+    }
+    
     
     
     #and merge into pop.mat
@@ -343,7 +381,7 @@ assign.infections <- function(pop.mat, gen_list, timestep, input.par){
     
     
     
-    #now put them into pop.mat
+    #now put them into pop.mat if big enough
     for(i in 1:nrow(new.mat)){
       
       #identify infector and iso time
@@ -436,8 +474,17 @@ assign.last.infections <- function(pop.mat, gen_list, remaining.susceptibles, ti
     
     
     #now, attach a place to infect (susceptible) -- should be enough
+    
     all.sus <- pop.mat$employ_ids[pop.mat$state==0]
+    all.vax <- pop.mat$employ_ids[pop.mat$state==6]
+    #randomly keep only 5% of the vaxed
+    select.vect <- sample(c(TRUE, FALSE), length(all.vax), prob = c(.05,.95), replace = T)
+    all.vax <- all.vax[select.vect]
+    
+    all.sus <-  c(all.sus,  all.vax)
+    
     new.dat$new_infected <- sample(all.sus, size=nrow(new.dat), replace=FALSE)
+    
     
     new.dat$new_exposure_time = new.dat$exposure_time + new.dat$generation_time 
     
@@ -568,8 +615,8 @@ initiate.pop <- function(start.ID.employ, pop.UCB, n.init.exposed, pop.ID, withi
   pop.par = subset(input.par, population==pop.ID)
   
   #make table one
-  pop.mat = cbind.data.frame(matrix(NA, nrow=pop.UCB, ncol =27))
-  names(pop.mat) <- c( "employ_ids","employ_cat", "state",  "traced",  "testing", "obs_dist_limits",  "exposure_time",   "total_potential_cases_caused",  "original_potential_cases_caused_UCB", "num_infection_events", "post_titer_potential_cases_caused_UCB", "potential_cases_caused", "actual_cases_caused", "case_source", "infector", "time_test_sensitive_start", "time_test_sensitive_end", "infector_iso_time", "time_of_tracing_iso", "time_of_next_test", "time_of_testing_iso", "titer_lim_for_symptoms", "time_of_symptom_onset", "time_of_symptom_iso", "time_isolation", "reason_isolated",  "timestep")
+  pop.mat = cbind.data.frame(matrix(NA, nrow=pop.UCB, ncol =28))
+  names(pop.mat) <- c( "employ_ids","employ_cat", "init_state", "state",  "traced",  "testing", "obs_dist_limits",  "exposure_time",   "total_potential_cases_caused",  "original_potential_cases_caused_UCB", "num_infection_events", "post_titer_potential_cases_caused_UCB", "potential_cases_caused", "actual_cases_caused", "case_source", "infector", "time_test_sensitive_start", "time_test_sensitive_end", "infector_iso_time", "time_of_tracing_iso", "time_of_next_test", "time_of_testing_iso", "titer_lim_for_symptoms", "time_of_symptom_onset", "time_of_symptom_iso", "time_isolation", "reason_isolated",  "timestep")
   
   #and fill in all you can
   pop.mat$testing = pop.par$par1[pop.par$parameter=="test-on"]
@@ -669,12 +716,12 @@ initiate.pop <- function(start.ID.employ, pop.UCB, n.init.exposed, pop.ID, withi
   #make initial state variable
   pop.mat$state <- rep(as.integer(0),pop.UCB)
   
-  #based on the proportion vaccinated, some get moved to recovered (state 5) right away 
-  #for all of our model runs, this is 0, so this gets skipped
+  #based on the proportion vaccinated, some get moved to vaccinate (state 6) right away 
+  #these can get infected, but only about 5% of the time 
   if(as.numeric(pop.par$par1[pop.par$parameter=="prop-vaccinated"])>0){
     tot.vacc <- round(as.numeric(pop.par$par1[pop.par$parameter=="prop-vaccinated"])*pop.UCB,0)
     index.vacc = sample(1:pop.UCB, size=tot.vacc, replace=FALSE)
-    pop.mat$state[index.vacc] <- 5
+    pop.mat$state[index.vacc] <- 6
   }
   
   #then, regardless of vaccination, overwrite susceptibles with those initially exposed
@@ -759,7 +806,8 @@ initiate.pop <- function(start.ID.employ, pop.UCB, n.init.exposed, pop.ID, withi
   
   #NOW, we generate new cases:
   #we break down each infectious individual based on that individual's: 
-  #(a) within-host titer trajectory, (b) the selected value for within-host theta (how viral load translates toinfection probability), 
+  #(a) within-host titer trajectory, 
+  #(b) the selected value for within-host theta (how viral load translates toinfection probability), 
   #(c) the number of discrete transmission events that we draw for each person, and 
   #(d) the generation time of those contact events 
   #(for d, we currently use the Ferretti weibull, but we are hoping that a constant hazard of events
@@ -818,7 +866,7 @@ initiate.pop <- function(start.ID.employ, pop.UCB, n.init.exposed, pop.ID, withi
   
   
   #then, we set an exposure time for those cases that actually occur
-  pop.mat$exposure_time[pop.mat$state>0] <- 0
+  pop.mat$exposure_time[pop.mat$state==1] <- 0
   
   
   #first, assume that isolation time is symptomatic
@@ -845,6 +893,9 @@ initiate.pop <- function(start.ID.employ, pop.UCB, n.init.exposed, pop.ID, withi
   pop.mat$actual_cases_caused[pop.mat$state==1 & pop.mat$potential_cases_caused ==0] <- 0
   pop.mat$actual_cases_caused[pop.mat$state==1 & pop.mat$potential_cases_caused > 0] <-  c(unlist(lapply(new.cases, get.actual.cases, dat.gen=dat.gen, timestep)))
   
+  #and record initial state
+  pop.mat$init_state <- pop.mat$state
+  
   
   #now pop it back out, join with other sub-mats and assign those infections in time and space using your generation time vector.
   
@@ -865,7 +916,7 @@ epidemic.step = function(pop.mat, timestep,  length_timestep, prob.out,  gen_lis
   # if(timestep ==1 | timestep ==2 | (timestep%%7==1)| (timestep%%7==2)){
   #  n.outside.exposures = sum(sample(x=c(0,1), size=length(pop.mat$state[pop.mat$state==0]), replace=TRUE, prob = c(1-prob.out.wk, prob.out.wk)))
   #}else{
-  n.outside.exposures = sum(sample(x=c(0,1), size=length(pop.mat$state[pop.mat$state==0]), replace=TRUE, prob = c(1-prob.out, prob.out)))
+  n.outside.exposures = sum(sample(x=c(0,1), size=length(pop.mat$state[pop.mat$state==0 | pop.mat$state==6]), replace=TRUE, prob = c(1-prob.out, prob.out)))
   #}
   
   
@@ -873,7 +924,7 @@ epidemic.step = function(pop.mat, timestep,  length_timestep, prob.out,  gen_lis
     #if you find some, fill them in with an exposure time of now, distributed at random
     #could add in higher introduction rate for certain sub-groups in this case
     
-    new.case.ids = sample(pop.mat$employ_ids[pop.mat$state==0], size = n.outside.exposures, replace=FALSE)
+    new.case.ids = sample(pop.mat$employ_ids[pop.mat$state==0 | pop.mat$state==6], size = n.outside.exposures, replace=FALSE)
     # print(new.case.ids)
     #and assign
     for (i in 1:length(new.case.ids)){
@@ -881,7 +932,14 @@ epidemic.step = function(pop.mat, timestep,  length_timestep, prob.out,  gen_lis
       #print(new.case.ids[i])
       #expose the new cases immediately - but only those that have reached the current timestep already
       #those "predestined" for exposure get passed over for now.
-      pop.mat$state[pop.mat$employ_ids==new.case.ids[i]] <- 1
+      if(pop.mat$state[pop.mat$employ_ids==new.case.ids[i]]==0){
+        pop.mat$state[pop.mat$employ_ids==new.case.ids[i]] <- 1
+      }else{
+        random.1 <- sample(c(0,1), 1, prob=c(.95,.05))
+        if(random.1>0){
+          pop.mat$state[pop.mat$employ_ids==new.case.ids[i]] <- 1
+        }
+      }
       #pop.mat$state[pop.mat$employ_ids==new.case.ids[i] & pop.mat$stat_asymp==TRUE] <- 2
       #exposure time is this timestep
       pop.mat$exposure_time[pop.mat$employ_ids==new.case.ids[i]] <- timestep #infection kicks off so you can now calculat symptom onset time
@@ -1498,32 +1556,32 @@ simulate.epidemic <- function(input.pop, n.init.exposed.vector, employ.id.vector
   
   
   daily_exposures <- pop.mat[, day := ceiling(exposure_time) #time_isolated
-                             ][, .(daily_exposures = .N), by = day
-                               ]
+  ][, .(daily_exposures = .N), by = day
+  ]
   
   # #daily isolations 
   daily_isolations <- pop.mat[, day := ceiling(time_isolation) #
-                              ][, .(daily_isolations = .N), by = day
-                                ]
+  ][, .(daily_isolations = .N), by = day
+  ]
   
   daily_cal <- UCB.mat[, day := ceiling(time_isolation) #time_isolated
-                       ][, .(daily_isolations = .N), by = day
-                         ]
+  ][, .(daily_isolations = .N), by = day
+  ]
   daily_alameda <- alameda.mat[, day := ceiling(time_isolation) #time_isolated
-                               ][, .(daily_isolations = .N), by = day
-                                 ]
+  ][, .(daily_isolations = .N), by = day
+  ]
   
   daily_symp <- symp.mat[, day := ceiling(time_isolation) #time_isolated
-                         ][, .(daily_isolations = .N), by = day
-                           ]
+  ][, .(daily_isolations = .N), by = day
+  ]
   
   daily_trace <- trace.mat[, day := ceiling(time_isolation) #time_isolated
-                           ][, .(daily_isolations = .N), by = day
-                             ]
+  ][, .(daily_isolations = .N), by = day
+  ]
   
   daily_test <- test.mat[, day := ceiling(time_isolation) #time_isolated
-                         ][, .(daily_isolations = .N), by = day
-                           ]
+  ][, .(daily_isolations = .N), by = day
+  ]
   
   
   # maximum outbreak day
@@ -1545,7 +1603,7 @@ simulate.epidemic <- function(input.pop, n.init.exposed.vector, employ.id.vector
   
   # order and sum up
   daily_cases <- daily_exposures[order(day)
-                                 ][, cumulative := cumsum(daily_exposures)]
+  ][, cumulative := cumsum(daily_exposures)]
   
   
   # cut at max_week
