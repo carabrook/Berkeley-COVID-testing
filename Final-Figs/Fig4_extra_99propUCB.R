@@ -6,11 +6,12 @@ library(dplyr)
 homewd="/Users/caraebrook/Documents/R/R_repositories/Berkeley-Reopening/Berkeley-COVID-testing/"
 setwd(homewd)
 
+#higher proportion of cases in UCB community (99%) - no difference from baseline 90% model
+
 #Figure 4 shows gains in testing across the number of test days per week -- under binom R0
 
-#high vax high R0
-make_Fig4_S5 <- function(filename){
-load("Final-Figs/dat.test.all.10.20.high.vax.high.R0.Rdata")
+make_Fig4_extra <- function(filename){
+load("Final-Figs/dat.test.all.10.20.higher.prop.UCB.Rdata")
 head(dat.test.all)
 
 unique(dat.test.all$TAT)
@@ -100,10 +101,10 @@ p4b  <- ggplot(dat.sum.plot) + xlab("") + ylab("cases saved") + scale_fill_manua
 print(p4b)  
 
 
+
 # and plot R0
 
-
-load("Final-Figs/R0_test_all_group_10_20_high_vax_high_R0.Rdata")
+load("Final-Figs/R0_test_all_group_10_20_higher_prop_UCB.Rdata")
 
 
 dat.test.R0$intervention_class <- NA
@@ -123,11 +124,11 @@ dat.test.R0.plot = subset(dat.test.R0, n_test_days==2)
 newcolz2 = c("test + trace + symptom-iso + group limit" = "purple","test + trace + symptom-iso" = "magenta", "test + trace" = "seagreen", "testing only" = "cornflowerblue")
 
 p.4a <- ggplot(data=dat.test.R0.plot) + geom_point(aes(x=test_rotation, y=mean, color=intervention_class), shape = 16, size=5,  position=position_dodge(width=.5)) + 
-  ylab("reduction in Reff from intervention") + scale_color_manual(values = newcolz2) +
+  ylab("reduction in Reff from intervention") + scale_color_manual(values = newcolz2) + coord_cartesian(ylim=c(0,8)) +
   geom_errorbar(aes(x=test_rotation, ymin=lci, max=uci,  color=intervention_class), size=.1, show.legend = F,position=position_dodge(width=.5)) +
   theme_bw() + theme(panel.grid = element_blank(), axis.text= element_text(size = 12), axis.title = element_text(size=14), strip.text = element_text(size=14),
                      strip.background = element_rect(fill="white"), plot.margin = unit(c(1.5,.5,.5,2), "lines"), axis.title.x = element_blank(), 
-                     legend.title = element_blank(), legend.position = c(.74,.85), legend.text = element_text(size=8)) 
+                     legend.title = element_blank(), legend.position = c(.72,.85), legend.text = element_text(size=8)) 
 print(p.4a)
 
 
@@ -154,4 +155,4 @@ ggsave(file = filename,
 
 }
 
-make_Fig4_S5(filename="Final-Figs/Fig4-S5.png")
+make_Fig4_extra(filename="Final-Figs/Fig4-extra-99propUCB.png")

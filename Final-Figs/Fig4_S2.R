@@ -92,7 +92,7 @@ newcolz = c("test + trace +\nsymptom-iso + group limit" = "purple","test + trace
 p4b  <- ggplot(dat.sum.plot) + xlab("") + ylab("cases saved") + scale_fill_manual(values = newcolz) +  scale_color_manual(values = newcolz) +
   geom_bar(aes(x=test_rotation, y=cases_saved, fill=intervention_class), stat = "identity", position=position_dodge(), show.legend = F) +
   geom_errorbar(aes(x=test_rotation, ymin=cases_saved_lci, ymax=cases_saved_uci,color = intervention_class ), width =.3, size=.5, 
-                position=position_dodge(width = .9), show.legend = F) + coord_cartesian(ylim=c(0,18000)) +
+                position=position_dodge(width = .9), show.legend = F) + coord_cartesian(ylim=c(0,20000)) +
   theme_bw()+ theme(panel.grid = element_blank(),
                     axis.title.y = element_text(size=14),  axis.text.y = element_text(size=12), axis.text.x = element_text(size=12),
                     plot.margin = unit(c(1.5,.5,.5,.5), "lines"))
