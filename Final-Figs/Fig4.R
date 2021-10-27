@@ -3,10 +3,10 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 
-setwd("/Users/caraebrook/Documents/R/R_repositories/Berkeley-Reopening/Dec-2020/all-runs/")
-#Figure 4 shows gains in testing across the number of test days per week -- under binom R0
+homewd="/Users/caraebrook/Documents/R/R_repositories/Berkeley-Reopening/Berkeley-COVID-testing/"
+setwd(homewd)#Figure 4 shows gains in testing across the number of test days per week -- under binom R0
 
-make_Fig4_Fig4_S1 <- function(filename_Fig4, filename_FigS4){
+make_Fig4_FigS6 <- function(filename_Fig4, filename_FigS4){
 load("Final-Figs/dat.test.all.12.28.Rdata")
 head(dat.test.all)
 
@@ -171,8 +171,8 @@ ggsave(file = filename_FigS4,
        dpi=300)
 }
 
-make_Fig4_Fig4_S1(filename_Fig4="Final-Figs/Fig4.png",
-                  filename_FigS4="Final-Figs/Fig4-S1.png")
+make_Fig4_FigS6(filename_Fig4="Final-Figs/Fig4.png",
+                  filename_FigS4="Final-Figs/FigS6.png")
 
 make.SuppFile4 <- function(filename){
   
